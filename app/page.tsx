@@ -10,10 +10,15 @@ function getSearchParam(params: Record<string, string | string[] | undefined>, k
 
 type SearchParamsType = Record<string, string | string[] | undefined>;
 
-export default async function Home({ searchParams }: { searchParams: SearchParamsType }) {
+interface HomeProps {
+  searchParams: Promise<SearchParamsType>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
   const thisWeek = determineDate('thisWeek');
-  const startDateParam = getSearchParam(searchParams, 'startDate');
-  const endDateParam = getSearchParam(searchParams, 'endDate');
+  const searchParamsResult = await searchParams;
+  const startDateParam = getSearchParam(searchParamsResult, 'startDate');
+  const endDateParam = getSearchParam(searchParamsResult, 'endDate');
   const startDate = startDateParam ? new Date(startDateParam) : thisWeek.startDate;
   const endDate = endDateParam ? new Date(endDateParam) : thisWeek.endDate;
   const chores = await prisma.chore.findMany();
